@@ -60,8 +60,8 @@
             "Create",
             "Update"
           ],
-          "MappingMode": "Field",
-          "Value": "\"Person.PrimaryContract.StartDate\"",
+          "MappingMode": "Complex",
+          "Value": "\"function getDate() {\\r\\n    let date = new Date(Person.PrimaryContract.StartDate);\\r\\n\\r\\n    let day = (\\\"0\\\" + date.getDate()).slice(-2);\\r\\n    let month = (\\\"0\\\" + (date.getMonth() + 1)).slice(-2);\\r\\n    let year = date.getFullYear();\\r\\n\\r\\n    return day + \\\"/\\\" + month + \\\"/\\\" + year;\\r\\n}\\r\\n\\r\\ngetDate();\"",
           "UsedInNotifications": false,
           "StoreInAccountData": false
         }

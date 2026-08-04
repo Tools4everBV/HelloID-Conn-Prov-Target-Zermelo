@@ -154,23 +154,25 @@ function Get-CurrentSchoolYear {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
-        [DateTime]
-        $ContractStartDate
+        [string]
+        $RawStartDate
     )
 
-    $currentDate = Get-Date
-    $year = $currentDate.Year
+    # Force the NL formatting (dd-MM-yyyy of dd/MM/yyyy)
+    $culture = [System.Globalization.CultureInfo]::GetCultureInfo("nl-NL")
 
-    # Determine the start and end dates of the current school year
-    if ($currentDate.Month -lt 8) {
-        $startYear = $year - 1
-    } else {
-        $startYear = $year
+    try {
+        $startDate = [datetime]::Parse($RawStartDate, $culture)
+    } catch {
+        throw "Invalid startDate: [$RawStartDate]. Expected format: dd/MM/yyyy or yyyy-MM-dd."
     }
 
-    $schoolYearStartDate = (Get-Date -Year $startYear)
+    $year = $startDate.Year
+    if ($startDate.Month -lt 8) {
+        $year -= 1
+    }
 
-    Write-Output $schoolYearStartDate
+    return "$year-$($year + 1)"
 }
 ```
 
