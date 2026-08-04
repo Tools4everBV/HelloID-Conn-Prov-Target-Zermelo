@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com), and this project adheres to [Semantic Versioning](https://semver.org)
 
+## [1.2.1] - 04-08-2026
+
+### Fixed
+- Fixed issue [#7](https://github.com/Tools4everBV/HelloID-Conn-Prov-Target-Zermelo-Students/issues/7)
+- Fixed issue [#8](https://github.com/Tools4everBV/HelloID-Conn-Prov-Target-Zermelo-Students/issues/8)
+
 ## [1.2.0] - 16-12-2024
 
 - Assigning a departmentOfBranch is now part of the create lifecycle.
