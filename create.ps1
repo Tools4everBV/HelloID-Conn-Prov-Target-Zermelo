@@ -319,18 +319,16 @@ try {
 
     # Add a message and the result of each of the validations showing what will happen during enforcement
     if ($actionContext.DryRun -eq $true) {
-        Write-Information "[DryRun] $action Zermelo account for: [$($personContext.Person.DisplayName)], will be executed during enforcement"
-        Write-Information "Actions to proces [$($orderedActions)]"
+        Write-Information "[DryRun] create or correlate Zermelo account for: [$($personContext.Person.DisplayName)], will be executed during enforcement"
+        Write-Information "Actions to process [$($orderedActions)]"
         if ($null -ne $dryRunMessageDepartmentOfBranchToAssign){
             Write-Information "[DryRun] $dryRunMessageDepartmentOfBranchToAssign"
         }
     }
 
-
-
     # Process
     if (-not($actionContext.DryRun -eq $true)) {
-        Write-Information "Actions to proces [$($orderedActions)]"
+        Write-Information "Actions to process [$($orderedActions)]"
         foreach ($action in $orderedActions){
             switch ($action) {
                 'Create-Correlate' {
