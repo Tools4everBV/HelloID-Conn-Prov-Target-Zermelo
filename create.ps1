@@ -82,23 +82,25 @@ function Get-CurrentSchoolYear {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
-        [DateTime]
-        $ContractStartDate
+        [string]
+        $RawStartDate
     )
 
-    $currentDate = Get-Date
-    $year = $currentDate.Year
+    # Force the NL formatting (dd-MM-yyyy of dd/MM/yyyy)
+    $culture = [System.Globalization.CultureInfo]::GetCultureInfo("nl-NL")
 
-    # Determine the start and end dates of the current school year
-    if ($currentDate.Month -lt 8) {
-        $startYear = $year - 1
-    } else {
-        $startYear = $year
+    try {
+        $startDate = [datetime]::Parse($RawStartDate, $culture)
+    } catch {
+        throw "Invalid startDate: [$RawStartDate]. Expected format: dd/MM/yyyy or yyyy-MM-dd."
     }
 
-    $schoolYearStartDate = (Get-Date -Year $startYear)
+    $year = $startDate.Year
+    if ($startDate.Month -lt 8) {
+        $year -= 1
+    }
 
-    Write-Output $schoolYearStartDate
+    return "$year-$($year + 1)"
 }
 
 function Resolve-ZermeloError {
@@ -263,8 +265,7 @@ try {
     -not [string]::IsNullOrEmpty($actionContext.Data.classRoom) -and
     $actionContext.Data.startDate -ne [DateTime]::MinValue) {
         Write-Information 'Determine school year based on the startDate specified in [actionContext.Data.startDate]'
-        $currentSchoolYear = Get-CurrentSchoolYear -ContractStartDate $($actionContext.Data.startDate)
-        $schoolYearToMatch = "$($currentSchoolYear.Year)" + '-' + "$($currentSchoolYear.AddYears(1).Year)"
+        $schoolYearToMatch = Get-CurrentSchoolYear -RawStartDate $actionContext.Data.startDate
 
         Write-Information 'Determine which departmentOfBranch will need to be assigned'
         try {
@@ -319,18 +320,16 @@ try {
 
     # Add a message and the result of each of the validations showing what will happen during enforcement
     if ($actionContext.DryRun -eq $true) {
-        Write-Information "[DryRun] $action Zermelo account for: [$($personContext.Person.DisplayName)], will be executed during enforcement"
-        Write-Information "Actions to proces [$($orderedActions)]"
+        Write-Information "[DryRun] create or correlate Zermelo account for: [$($personContext.Person.DisplayName)], will be executed during enforcement"
+        Write-Information "Actions to process [$($orderedActions)]"
         if ($null -ne $dryRunMessageDepartmentOfBranchToAssign){
             Write-Information "[DryRun] $dryRunMessageDepartmentOfBranchToAssign"
         }
     }
 
-
-
     # Process
     if (-not($actionContext.DryRun -eq $true)) {
-        Write-Information "Actions to proces [$($orderedActions)]"
+        Write-Information "Actions to process [$($orderedActions)]"
         foreach ($action in $orderedActions){
             switch ($action) {
                 'Create-Correlate' {

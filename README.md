@@ -6,7 +6,7 @@
 
 <br />
 <p align="center">
-  <img src="https://www.tools4ever.nl/connector-logos/zermelo-logo.png" width="500">
+    <img src="https://github.com/Tools4everBV/HelloID-Conn-Prov-Target-Zermelo/blob/main/Logo.png?raw=true">
 </p>
 
 ## Table of contents
@@ -154,23 +154,25 @@ function Get-CurrentSchoolYear {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
-        [DateTime]
-        $ContractStartDate
+        [string]
+        $RawStartDate
     )
 
-    $currentDate = Get-Date
-    $year = $currentDate.Year
+    # Force the NL formatting (dd-MM-yyyy of dd/MM/yyyy)
+    $culture = [System.Globalization.CultureInfo]::GetCultureInfo("nl-NL")
 
-    # Determine the start and end dates of the current school year
-    if ($currentDate.Month -lt 8) {
-        $startYear = $year - 1
-    } else {
-        $startYear = $year
+    try {
+        $startDate = [datetime]::Parse($RawStartDate, $culture)
+    } catch {
+        throw "Invalid startDate: [$RawStartDate]. Expected format: dd/MM/yyyy or yyyy-MM-dd."
     }
 
-    $schoolYearStartDate = (Get-Date -Year $startYear)
+    $year = $startDate.Year
+    if ($startDate.Month -lt 8) {
+        $year -= 1
+    }
 
-    Write-Output $schoolYearStartDate
+    return "$year-$($year + 1)"
 }
 ```
 
@@ -223,9 +225,6 @@ Currently the `delete` lifecycle action is set to _archive_ the user account usi
 
 > [!TIP]
 > _For more information on how to configure a HelloID PowerShell connector, please refer to our [documentation](https://docs.helloid.com/en/provisioning/target-systems/powershell-v2-target-systems.html) pages_.
-
-> [!TIP]
->  _If you need help, feel free to ask questions on our [forum](https://forum.helloid.com/forum/helloid-connectors/provisioning/4793-helloid-conn-prov-target-zermelo)_.
 
 ## HelloID docs
 
